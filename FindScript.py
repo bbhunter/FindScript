@@ -42,7 +42,7 @@ args = parser.parse_args()
 
 RE_GOOGLE_URL = r'(?<=\<div class=\"r\"\>\<a href\=\")https?://[a-zA-Z\.0-9\/\@-]*(?=\")'
 RE_VALID_ARGS_URL = r'[a-z0-9\.]+\.[a-z]+'
-GOOGLE_TLDS = ['de','com', 'dk', 'com.au', 'se', 'fr', 'es', 'pt', 'pl', 'ca', 'at']
+GOOGLE_TLDS = ['de', 'com', 'dk', 'com.au', 'se', 'fr', 'es', 'pt', 'pl', 'ca', 'at']
 GITHUB_TOKEN = 'YOUR_TOKEN_HERE'
 
 valid_js_urls = []
@@ -86,7 +86,7 @@ def resolve_and_test(url_list, source):
 
             try:
                 source_code = request_bytes.read().decode("utf-8")
-                    
+
             except UnicodeDecodeError:
                 continue           
 
@@ -95,16 +95,15 @@ def resolve_and_test(url_list, source):
         else:
 
             try:
-                
-                try:
-                    source_code = str(base64.b64decode(url.content.strip()))
-                
-                except TypeError:
+                source_code = str(base64.b64decode(url.content.strip()))
+
+            except (GithubException, TypeError) as e:
+                if 'NoneType' in str(e):
                     continue
-                    
-            except GithubException:
-                printWarning('Mission Failed: Github Blocked Us.')
-                break
+
+                else:
+                    printWarning('Mission Failed: Github Blocked Us.')
+                    break
 
         if not re.search(re_valid_js_url, source_code):
             continue
@@ -211,11 +210,15 @@ def search_github():
             try:
                 found_url = github_search_asc[index]
 
-            except GithubException:
-                printWarning('Mission Failed: Github Blocked Us.')
-                resolve_and_test(found_urls)
-                githubBlocked = True
-                break                
+            except (GithubException, IndexError) as e:
+                if 'index' in str(e):
+                    break
+                
+                else:
+                    printWarning('Mission Failed: Github Blocked Us.')
+                    resolve_and_test(found_urls)
+                    githubBlocked = True
+                    break                
 
             if found_url not in found_urls:
                 found_urls.append(found_url)
@@ -223,11 +226,15 @@ def search_github():
             try:
                 found_url = github_search_desc[index]
 
-            except GithubException:
-                printWarning('Mission Failed: Github Blocked Us.')
-                resolve_and_test(found_urls, 'Github')
-                githubBlocked = True
-                break
+            except (GithubException, IndexError) as e:
+                if 'index' in str(e):
+                    break
+
+                else: 
+                    printWarning('Mission Failed: Github Blocked Us.')
+                    resolve_and_test(found_urls, 'Github')
+                    githubBlocked = True
+                    break
 
             if found_url not in found_urls:
                 found_urls.append(found_url)
@@ -294,3 +301,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
