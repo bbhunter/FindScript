@@ -26,12 +26,12 @@ $ python3 FindScript.py -h
  |_|    |_|_| |_|\__,_|_____/ \___|_|  |_| .__/ \__|
                                          | |        
                                          |_| 
-Version: 1.0
+Version: 1.1
 By 0x41CoreDump
 
 
 usage: FindScript.py [-h] -u URL [--include-unresolvable] [-e EXTENSION]
-                     [-o OUTPUT]
+                     [-gop GOOGLE_PAGES] [-gip GITHUB_PAGES] [-o OUTPUT]
 
 Scrape Javascript Files From Google And Github
 
@@ -42,6 +42,10 @@ optional arguments:
                         Include Non Resolvable URLs To The List
   -e EXTENSION, --extension EXTENSION
                         What Extension To Look For: js
+  -gop GOOGLE_PAGES, --google_pages GOOGLE_PAGES
+                        How Many Google Pages To Search
+  -gip GITHUB_PAGES, --github_pages GITHUB_PAGES
+                        How Many Github Pages To Search
   -o OUTPUT, --output OUTPUT
 
 ```
