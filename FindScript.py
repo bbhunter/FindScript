@@ -165,7 +165,7 @@ def search_google():
                     break
 
                 else:
-                    printWarning('Unable To Connect To {}. Are You Connected To The Internet?'.format(google_seach_url))
+                    printWarning('Unable To Connect To {}. Are You Connected To The Internet?'.format(google_search_url))
 
             google_search_results = google_search_bytes.read().decode('utf-8')
 
