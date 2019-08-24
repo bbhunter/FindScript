@@ -23,7 +23,7 @@ Version: 1.0
 By 0x41CoreDump
 
 
-usage: FindScript.py [-h] -u URL [--include-unresolvable] [-v] [-e EXTENSION]
+usage: FindScript.py [-h] -u URL [--include-unresolvable] [-e EXTENSION]
                      [-o OUTPUT]
 
 Scrape Javascript Files From Google And Github
@@ -33,7 +33,6 @@ optional arguments:
   -u URL, --url URL     The Target Domain
   --include-unresolvable
                         Include Non Resolvable URLs To The List
-  -v, --verbose
   -e EXTENSION, --extension EXTENSION
                         What Extension To Look For: js
   -o OUTPUT, --output OUTPUT
