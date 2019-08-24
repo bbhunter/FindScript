@@ -42,7 +42,7 @@ args = parser.parse_args()
 
 RE_GOOGLE_URL = r'(?<=\<div class=\"r\"\>\<a href\=\")https?://[a-zA-Z\.0-9\/\@-]*(?=\")'
 RE_VALID_ARGS_URL = r'[a-z0-9\.]+\.[a-z]+'
-GOOGLE_TLDS = ['de', 'com', 'dk', 'com.au', 'se', 'fr', 'es', 'pt', 'pl', 'ca', 'at']
+GOOGLE_TLDS = ['de','com', 'dk', 'com.au', 'se', 'fr', 'es', 'pt', 'pl', 'ca', 'at']
 GITHUB_TOKEN = 'YOUR_TOKEN_HERE'
 
 valid_js_urls = []
@@ -112,18 +112,22 @@ def resolve_and_test(url_list, source):
 
             if not args.include_unresolvable:
 
-                try:
-                    test_request = urllib.request.urlopen(urllib.request.Request(valid_url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101 Firefox/68.0'}), timeout=3)
+                for proto in ['http://', 'https://']:
 
-                    if valid_url not in valid_js_urls:
-                        printSuccess('Found ({}): {}'.format(source, valid_url))
-                        valid_js_urls.append(valid_url)
+                    try:
+                        test_request = urllib.request.urlopen(urllib.request.Request(proto+valid_url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101 Firefox/68.0'}), timeout=3)
 
-                        if args.output:
-                            open(args.output, 'a', 1).write(valid_url+'\n')
+                        if valid_url not in valid_js_urls:
+                            printSuccess('Found ({}): {}'.format(source, valid_url))
+                            valid_js_urls.append(valid_url)
 
-                except (urllib.error.HTTPError, urllib.error.URLError, socket.timeout):
-                    continue
+                            if args.output:
+                                open(args.output, 'a', 1).write(valid_url+'\n')
+
+                            break
+
+                    except (urllib.error.HTTPError, urllib.error.URLError, socket.timeout):
+                        continue
             
             else:
 
