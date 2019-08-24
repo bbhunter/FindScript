@@ -30,20 +30,24 @@ banner = '''
                                          | |        
                                          |_| 
 '''
-print(Fore.YELLOW+banner+Style.RESET_ALL+"Version: 1.0\nBy 0x41CoreDump\n\n")
 
-parser = argparse.ArgumentParser(description='Scrape Javascript Files From Google And Github')
+print(Fore.YELLOW+banner+Style.RESET_ALL+"Version: 1.1\nBy 0x41CoreDump\n\n")
+
+parser = argparse.ArgumentParser(description='Scrape Scripts From Google And Github')
 
 parser.add_argument('-u', '--url', type=str, help='The Target Domain', required=True)
 parser.add_argument('--include-unresolvable', action='store_true', help='Include Non Resolvable URLs To The List', required=False)
-parser.add_argument('-e', '--extension', type=str, default='js', help='What Extension To Look For: js')
+parser.add_argument('-e', '--extension', type=str, default='js', help='What Extension To Look For, Default: js')
+parser.add_argument('-gop', '--google_pages', type=int, default=15, help='How Many Google Pages To Search, Default: 15')
+parser.add_argument('-gip', '--github_pages', type=int, default=5, help='How Many Github Pages To Search, Default: 5')
 parser.add_argument('-o', '--output', type=str, required=False)
+
 args = parser.parse_args()
 
 RE_GOOGLE_URL = r'(?<=\<div class=\"r\"\>\<a href\=\")https?://[a-zA-Z\.0-9\/\@-]*(?=\")'
 RE_VALID_ARGS_URL = r'[a-z0-9\.]+\.[a-z]+'
-GOOGLE_TLDS = ['de','com', 'dk', 'com.au', 'se', 'fr', 'es', 'pt', 'pl', 'ca', 'at']
-GITHUB_TOKEN = 'YOUR_TOKEN_HERE'
+GOOGLE_TLDS = ['de', 'com', 'dk', 'com.au', 'se', 'fr', 'es', 'pt', 'pl', 'ca', 'at']
+GITHUB_TOKEN = 'YOUR_KEY_HERE'
 
 valid_js_urls = []
 google_finished = False
@@ -79,7 +83,7 @@ def resolve_and_test(url_list, source):
         if source == 'Google':
 
             try:
-                request_bytes = urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101 Firefox/68.0'}), timeout=3)
+                request_bytes = urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101 Firefox/68.0'}), timeout=4)
 
             except (urllib.error.HTTPError, urllib.error.URLError, socket.timeout):
                 continue
@@ -115,7 +119,7 @@ def resolve_and_test(url_list, source):
                 for proto in ['http://', 'https://']:
 
                     try:
-                        test_request = urllib.request.urlopen(urllib.request.Request(proto+valid_url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101 Firefox/68.0'}), timeout=3)
+                        test_request = urllib.request.urlopen(urllib.request.Request(proto+valid_url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101 Firefox/68.0'}), timeout=4)
 
                         if valid_url not in valid_js_urls:
                             printSuccess('Found ({}): {}'.format(source, valid_url))
@@ -153,12 +157,12 @@ def search_google():
         query = '"{}"+"{}"'.format(args.url, args.extension)
         found_urls = []
 
-        for start in range(0,210,10):
+        for start in range(0,(args.google_pages*10)+10,10):
 
             google_search_url = 'https://google.{}/search?q={}&start={}'.format(random.choice(GOOGLE_TLDS), query, start) # Random TLDs To Avoid A Fast Ban
 
             try:
-                google_search_bytes = urllib.request.urlopen(urllib.request.Request(google_search_url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101 Firefox/68.0'}), timeout=3)
+                google_search_bytes = urllib.request.urlopen(urllib.request.Request(google_search_url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101 Firefox/68.0'}), timeout=4)
 
             except (urllib.error.HTTPError, urllib.error.URLError, socket.timeout) as e:
 
@@ -170,8 +174,7 @@ def search_google():
 
                 else:
                     printWarning('Unable To Connect To {}. Are You Connected To The Internet?'.format(google_search_url))
-                    continue 
-                    
+
             google_search_results = google_search_bytes.read().decode('utf-8')
 
             google_search_bytes.close()
@@ -210,7 +213,7 @@ def search_github():
 
         github_search_desc = g.search_code(args.url+' '+args.extension, order='desc')
 
-        for index in range(51):
+        for index in range((args.github_pages*10)+1):
 
             try:
                 found_url = github_search_asc[index]
@@ -246,7 +249,6 @@ def search_github():
 
             time.sleep(1)
 
-        # maybe change the urls to api and use 
         resolve_and_test(found_urls, 'Github')
 
         githubBlocked = True
@@ -306,4 +308,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
