@@ -86,7 +86,7 @@ def resolve_and_test(url_list, source):
 
             try:
                 source_code = request_bytes.read().decode("utf-8")
-
+                    
             except UnicodeDecodeError:
                 continue           
 
@@ -95,8 +95,13 @@ def resolve_and_test(url_list, source):
         else:
 
             try:
-                source_code = str(base64.b64decode(url.content.strip()))
-
+                
+                try:
+                    source_code = str(base64.b64decode(url.content.strip()))
+                
+                except TypeError:
+                    continue
+                    
             except GithubException:
                 printWarning('Mission Failed: Github Blocked Us.')
                 break
