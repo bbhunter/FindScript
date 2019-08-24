@@ -87,7 +87,7 @@ def resolve_and_test(url_list, source):
             try:
                 source_code = request_bytes.read().decode("utf-8")
 
-            except UnicodeDecodeError:
+            except (UnicodeDecodeError, socket.timeout):
                 continue           
 
             request_bytes.close()
