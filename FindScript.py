@@ -101,7 +101,7 @@ def resolve_and_test(url_list, source):
             try:
                 source_code = str(base64.b64decode(url.content.strip()))
 
-            except (GithubException, TypeError) as e:
+            except (GithubException, TypeError, AttributeError) as e:
                 if 'NoneType' in str(e):
                     continue
 
