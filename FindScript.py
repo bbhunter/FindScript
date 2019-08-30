@@ -76,7 +76,7 @@ def resolve_and_test(url_list, source):
     splitted_u.remove(tld)
     u = ".".join(splitted_u)
 
-    re_valid_js_url = r'[a-z\.]*{}\.{}[a-zA-Z0-9/\.\-]*\.{}'.format(u, tld, args.extension)
+    re_valid_js_url = r'[a-z\.]*{}\.{}[a-zA-Z0-9\/\.\:\?\+\-]*\.{}'.format(u, tld, args.extension)
 
     for url in url_list:
 
